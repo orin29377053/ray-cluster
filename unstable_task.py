@@ -1,8 +1,8 @@
 import ray
 import random
 
-# ray.init(address="auto")
-ray.init(num_cpus=4)
+ray.init(address="auto")
+# ray.init(num_cpus=4)
 
 
 @ray.remote(max_retries=3)

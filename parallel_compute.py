@@ -7,6 +7,7 @@ ray.init(address="auto")
 
 @ray.remote
 def compute(x):
+    print(f"computing {x}")
     return x * x
 
 

@@ -8,7 +8,7 @@ ray.init(address="auto")
 @ray.remote(max_retries=3)
 def unstable_task(x):
 
-    if random.random() < 0.9:
+    if random.random() < 0.5:
         raise ValueError("task failed")
     return x * 2
 

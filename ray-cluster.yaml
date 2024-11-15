@@ -20,8 +20,11 @@ spec:
       spec:
         containers:
           - name: ray-head
-            image: rayproject/ray:2.9.0-aarch64  
-            imagePullPolicy: IfNotPresent 
+            image: orin29377053/ray-cluster:latest
+            env:
+              - name: ROLE
+                value: "head" 
+            imagePullPolicy: Always 
             resources:
               requests:
                 cpu: "1"
@@ -42,7 +45,7 @@ spec:
   workerGroupSpecs:  
     - groupName: workergroup 
       replicas: 2  
-      minReplicas: 1 
+      minReplicas: 2 
       maxReplicas: 3  
       numOfHosts: 1
       rayStartParams: {}
@@ -54,8 +57,11 @@ spec:
         spec:
           containers:
             - name: ray-worker
-              image: rayproject/ray:2.9.0-aarch64  
-              imagePullPolicy: IfNotPresent
+              image: orin29377053/ray-cluster:latest  
+              env:
+                - name: ROLE
+                  value: "worker"
+              imagePullPolicy: Always
               resources:
                 limits:
                   cpu: "1"

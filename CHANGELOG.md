@@ -18,3 +18,14 @@
 - Changed Docker image to a custom version for both head and worker nodes.
 - Enhanced logging in `parallel_compute.py` to indicate computation progress.
 - Adjusted failure threshold in `unstable_task.py` to increase task failure rate.
+
+
+## [2024-11-17]
+### Added
+- **download_dataset.py**: Added a script to download and extract the COCO128 dataset from a YAML configuration file.
+  - Downloads `coco128.yaml` and retrieves the dataset URL.
+  - Downloads the dataset and extracts it to the specified directory.
+  
+- **training.py**: Added a script for training the YOLOv8 model using the COCO128 dataset.
+  - Implements a distributed training loop with hyperparameter tuning using Ray Tune.
+  - Reports the mean Average Precision (mAP50) metric during training.

@@ -2,10 +2,9 @@ import ray
 import random
 
 ray.init(address="auto")
-# ray.init(num_cpus=4)
 
 
-@ray.remote
+@ray.remote()
 def compute(x):
     print(f"computing {x}")
     return x * x

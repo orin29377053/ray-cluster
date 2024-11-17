@@ -2,14 +2,15 @@ import ray
 import random
 
 ray.init(address="auto")
-# ray.init(num_cpus=4)
 
 
 @ray.remote(max_retries=3)
 def unstable_task(x):
 
     if random.random() < 0.5:
+        print(f"task failed: {x}")
         raise ValueError("task failed")
+    print(f"task succeeded: {x}")
     return x * 2
 
 

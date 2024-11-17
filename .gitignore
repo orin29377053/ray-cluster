@@ -4,8 +4,9 @@ __pycache__/
 venv/
 env/
 ENV/
+datasets/
 .venv/
-
+*.zip
 .idea/
 .vscode/
 *.swp

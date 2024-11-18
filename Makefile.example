@@ -1,4 +1,6 @@
 IMAGE_NAME=
+HEAD_POD=$(shell kubectl get pods --selector=ray.io/node-type=head -o jsonpath='{.items[0].metadata.name}')
+NAMESPACE=default
 
 all: build push
 
@@ -7,3 +9,63 @@ build:
 
 push:
 	docker push $(IMAGE_NAME)
+
+# create namespace
+create-namespace:
+	kubectl create namespace $(NAMESPACE) --dry-run=client -o yaml | kubectl apply -f -
+
+# deploy prometheus config
+deploy-prometheus-config:
+	kubectl apply -f prometheus-config.yaml
+
+# clean old ray cluster
+clean-ray:
+	kubectl delete -f ray-cluster.yaml --ignore-not-found=true
+	sleep 10 
+
+# deploy new ray cluster
+deploy-ray:
+	kubectl apply -f ray-cluster.yaml
+
+
+# setup monitoring
+setup-monitoring:
+	@echo "Setting up port forwarding..."
+	@kubectl port-forward svc/grafana -n prometheus 3000:80 > /dev/null 2>&1 &
+	@kubectl port-forward svc/prometheus-server -n prometheus 9090:80 > /dev/null 2>&1 &
+
+# clean monitoring
+clean-monitoring:
+	@echo "Cleaning up port forwarding..."
+	-pkill -f "port-forward.*3000" || true
+	-pkill -f "port-forward.*9090" || true
+
+
+# full deploy process
+deploy: create-namespace deploy-prometheus-config clean-ray deploy-ray setup-monitoring
+
+# get head pod
+get-head-pod:
+	@echo "Head Pod: $(HEAD_POD)"
+
+exec-head:
+	kubectl exec -it $(HEAD_POD) -- /bin/bash
+
+proxy:
+	kubectl port-forward $(HEAD_POD) 8265:8265 -n $(NAMESPACE) &
+
+# check status
+check-status:
+	@echo "Checking Ray cluster status..."
+	@kubectl get pods -l ray.io/cluster=my-raycluster
+	@echo "\nChecking Prometheus config..."
+	@kubectl get configmap prometheus-datasource-config
+
+
+
+# clean all resources
+clean-all:
+	kubectl delete -f ray-cluster.yaml --ignore-not-found=true
+	kubectl delete -f prometheus-config.yaml --ignore-not-found=true
+
+.PHONY: all build push create-namespace deploy-prometheus-config clean-ray deploy-ray wait-ray deploy get-head-pod exec-head proxy check-status clean-all

@@ -5,10 +5,15 @@ from ray.train import ScalingConfig, report
 from ultralytics import YOLO
 import logging
 import torch
+from ray.util.metrics import Counter, Gauge
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+training_iterations = Counter(
+    "training_iterations", description="Number of training iterations completed"
+)
+current_map50 = Gauge("map50_score", description="Current mAP50 score")
 
 
 def train_loop_per_worker(config):
@@ -35,7 +40,20 @@ def train_loop_per_worker(config):
                 save=False,
             )
 
+            training_iterations.inc()
+
             best_map = results.results_dict["metrics/mAP50(B)"]
+            current_map50.set(float(best_map))
+            val_results = model.val(
+                data="coco128.yaml",
+                batch=config["batch_size"],
+                imgsz=config["imgsz"],
+                device=device,
+                plots=False,
+                save=False,
+            )
+            logger.info(f"Validation results: {val_results}")
+
             logger.info(f"Epoch {epoch + 1} mAP50: {best_map}")
 
             report(
@@ -60,13 +78,16 @@ def main():
         logger.info("Ray initialized successfully")
 
         search_space = {
-            "batch_size": 4,
-            "lr0": 0.001,
-            "imgsz": 64,
-            "epochs": 1,
+            "batch_size": tune.choice([4, 8, 16]),
+            "lr0": tune.choice([0.001, 0.005, 0.01]),
+            "imgsz": tune.choice([64, 128, 256]),
+            "epochs": tune.choice([1, 3, 5]),
         }
 
         logger.info(f"Using search space: {search_space}")
+        reporter = tune.CLIReporter()
+        reporter.add_metric_column("training_iterations")
+        reporter.add_metric_column("map50_score")
 
         def distributed_train(config):
             trainer = TorchTrainer(

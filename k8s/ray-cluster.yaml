@@ -13,7 +13,6 @@ spec:
     rayStartParams:
       dashboard-host: "0.0.0.0"
       metrics-export-port: "8080"
-      dashboard-agent-listen-port: "44227"
       include-dashboard: "true"
       block: "true"
     template:
@@ -95,12 +94,11 @@ spec:
 
   workerGroupSpecs:
     - groupName: workergroup
-      replicas: 1
-      minReplicas: 1
-      maxReplicas: 1
+      replicas: 3 
+      minReplicas: 3
+      maxReplicas: 3
       rayStartParams:
         metrics-export-port: "8080"
-        dashboard-agent-listen-port: "44227"
       template:
         metadata:
           labels:
@@ -142,11 +140,11 @@ spec:
                 periodSeconds: 10
               resources:
                 limits:
-                  cpu: "2"
-                  memory: "6G"
+                  cpu: "1"
+                  memory: "2G"
                 requests:
-                  cpu: "2"
-                  memory: "6G"
+                  cpu: "1"
+                  memory: "2G"
               volumeMounts:
                 - mountPath: /tmp/ray
                   name: log-volume

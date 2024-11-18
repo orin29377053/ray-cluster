@@ -29,3 +29,8 @@
 - **training.py**: Added a script for training the YOLOv8 model using the COCO128 dataset.
   - Implements a distributed training loop with hyperparameter tuning using Ray Tune.
   - Reports the mean Average Precision (mAP50) metric during training.
+
+## [2024-11-18,19]
+### Added
+- **Monitoring**: Added Grafana and Prometheus to the Ray cluster and successfully retrieved metrics.
+- **Other Tasks**: Adjusted the system configuration and updated the README file.

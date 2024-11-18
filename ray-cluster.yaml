@@ -11,20 +11,66 @@ spec:
   headGroupSpec:
     serviceType: ClusterIP  
     rayStartParams:
-      dashboard-host: "0.0.0.0"   
+      dashboard-host: "0.0.0.0"
+      metrics-export-port: "8080"
+      dashboard-agent-listen-port: "44227"
+      include-dashboard: "true"
+      block: "true"
     template:
       metadata:
         labels:
           helm.sh/chart: ray-cluster-1.2.2
           app.kubernetes.io/instance: raycluster
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "8080"
       spec:
         containers:
           - name: ray-head
             image: orin29377053/ray-cluster:latest
             env:
               - name: ROLE
-                value: "head" 
-            imagePullPolicy: Always 
+                value: "head"
+              - name: PROMETHEUS_METRICS
+                value: "true"
+              - name: RAY_GRAFANA_IFRAME_HOST
+                value: "http://127.0.0.1:3000"
+              - name: RAY_GRAFANA_HOST
+                value: "http://grafana.prometheus.svc.cluster.local"
+              - name: RAY_PROMETHEUS_HOST
+                value: "http://prometheus-server.prometheus.svc.cluster.local"
+              - name: GRAFANA_USER
+                value: "admin"
+              - name: GRAFANA_PASSWORD
+                value: "admin"
+              - name: RAY_ENABLE_JOB_AGENT
+                value: "true"
+              - name: RAY_JOB_AGENT_PORT
+                value: "8265"
+            ports:
+              - containerPort: 8080
+                name: metrics
+              - containerPort: 44217
+                name: as-metrics
+              - containerPort: 44227
+                name: dash-metrics
+              - containerPort: 6379
+                name: gcs
+              - containerPort: 8265
+                name: dashboard
+              - containerPort: 10001
+                name: client
+            imagePullPolicy: Always
+            livenessProbe:
+              tcpSocket:
+                port: 6379
+              initialDelaySeconds: 40
+              periodSeconds: 10
+            readinessProbe:
+              tcpSocket:
+                port: 8265
+              initialDelaySeconds: 40
+              periodSeconds: 10
             resources:
               limits:
                 cpu: "2"
@@ -32,36 +78,68 @@ spec:
               requests:
                 cpu: "2"
                 memory: "3G"
-
             volumeMounts:
               - mountPath: /tmp/ray
-                name: log-volume 
+                name: log-volume
+              - mountPath: /etc/prometheus
+                name: prometheus-config
         volumes:
           - name: log-volume
-            emptyDir: {}  
-        affinity: {} 
-        tolerations: [] 
-        nodeSelector: {}  
+            emptyDir: {}
+          - name: prometheus-config
+            configMap:
+              name: prometheus-datasource-config
+        affinity: {}
+        tolerations: []
+        nodeSelector: {}
 
-  workerGroupSpecs:  
-    - groupName: workergroup 
-      replicas: 1  
-      minReplicas: 1 
-      maxReplicas: 1 
-      rayStartParams: {}
+  workerGroupSpecs:
+    - groupName: workergroup
+      replicas: 1
+      minReplicas: 1
+      maxReplicas: 1
+      rayStartParams:
+        metrics-export-port: "8080"
+        dashboard-agent-listen-port: "44227"
       template:
         metadata:
           labels:
             helm.sh/chart: ray-cluster-1.2.2
             app.kubernetes.io/instance: raycluster
+          annotations:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "8080"
         spec:
           containers:
             - name: ray-worker
-              image: orin29377053/ray-cluster:latest  
+              image: orin29377053/ray-cluster:latest
               env:
                 - name: ROLE
                   value: "worker"
+                - name: PROMETHEUS_METRICS
+                  value: "true"
+                - name: RAY_GRAFANA_IFRAME_HOST
+                  value: "http://grafana.prometheus.svc.cluster.local"
+                - name: RAY_GRAFANA_HOST
+                  value: "http://grafana.prometheus.svc.cluster.local"
+                - name: RAY_PROMETHEUS_HOST
+                  value: "http://prometheus-server.prometheus.svc.cluster.local"
+              ports:
+                - containerPort: 8080
+                  name: metrics
+                - containerPort: 44227
+                  name: dash-metrics
               imagePullPolicy: Always
+              livenessProbe:
+                tcpSocket:
+                  port: 8080  # metrics port
+                initialDelaySeconds: 40
+                periodSeconds: 10
+              readinessProbe:
+                tcpSocket:
+                  port: 8080  # metrics port
+                initialDelaySeconds: 40
+                periodSeconds: 10
               resources:
                 limits:
                   cpu: "2"
@@ -69,13 +147,17 @@ spec:
                 requests:
                   cpu: "2"
                   memory: "6G"
-
               volumeMounts:
                 - mountPath: /tmp/ray
                   name: log-volume
+                - mountPath: /etc/prometheus
+                  name: prometheus-config
           volumes:
             - name: log-volume
               emptyDir: {}
-          affinity: {}  
-          tolerations: []  
-          nodeSelector: {}  
+            - name: prometheus-config
+              configMap:
+                name: prometheus-datasource-config
+          affinity: {}
+          tolerations: []
+          nodeSelector: {}

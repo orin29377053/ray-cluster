@@ -1,7 +1,7 @@
 import ray
 import random
 
-ray.init(address="auto")
+ray.init()
 
 
 @ray.remote()

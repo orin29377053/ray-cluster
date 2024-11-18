@@ -1,6 +1,16 @@
+
 # Introduction
 
 This project sets up a scalable Ray cluster using KubeRay on Minikube, optimized for distributed machine learning. The cluster includes one head node and three worker nodes, efficiently supporting tasks like YOLOv8 training and hyperparameter tuning. Monitoring is integrated using Prometheus and Grafana, enabling real-time visualization of system and training metrics. Future work focuses on enhancing custom metric integration, persistent storage, and exporting training results for further analysis.
+
+# Outline
+[Setup](#setup)
+[Question 1](#question-1)
+[Question 2](#question-2)
+[Question 3](#question-3)
+[Question 4](#question-4)
+[Project File Structure](#project-file-structure)
+[Future work](#future-work)
 
 ## Minikube Configuration  
 Allocate the following resources for Minikube:  
@@ -360,7 +370,7 @@ I noticed that only system metrics are visible on the Ray dashboard. Instead, I 
     │   └── unstable_task.py                        # Script for testing system stability
     ├── upload-dashboard.sh                         # Script to upload dashboards to Grafana
 ```
-### Future Work
+# Future Work
 
 - [ ] Keep trying integrate Custom Metrics into Ray Dashboard.
 - [ ] Enable training results to be sent to an external system for further analysis or storage.

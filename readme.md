@@ -333,34 +333,35 @@ I noticed that only system metrics are visible on the Ray dashboard. Instead, I 
 
 
 # Project File Structure
+```bash
 
-├── CHANGELOG.md                                
-├── Dockerfile                                  
-├── Makefile.example                            # Example template for creating Makefile
-├── dashboards/                                 # Grafana dashboard configurations
-│   ├── data_grafana_dashboard.json            
-│   ├── default_grafana_dashboard.json         
-│   ├── serve_deployment_grafana_dashboard.json  
-│   └── serve_grafana_dashboard.json           
-├── entrypoint.sh                               # Container entry point script
-├── images/                                     # Directory for documentation images
-├── init/                                       # Initialization scripts
-│   └── download_dataset.py                     
-├── k8s/                                        # Kubernetes configuration files
-│   ├── grafana-config.yaml                     # Grafana settings
-│   ├── prometheus-config.yaml                  # Prometheus settings
-│   ├── ray-cluster.yaml                        # Ray cluster configuration
-│   └── ray-service.yaml                        # Ray service definitions
-├── readme.md                                   # Project documentation
-├── requirements.txt                            # Python package dependencies
-├── scripts/                                    
-│   ├── parallel_compute.py                     # Script for parallel computation tasks
-│   ├── training.py                             # ML model training script
-│   └── unstable_task.py                        # Script for testing system stability
-├── upload-dashboard.sh                         # Script to upload dashboards to Grafana
-
+    ├── CHANGELOG.md                                
+    ├── Dockerfile                                  
+    ├── Makefile.example                            # Example template for creating Makefile
+    ├── dashboards/                                 # Grafana dashboard configurations
+    │   ├── data_grafana_dashboard.json            
+    │   ├── default_grafana_dashboard.json         
+    │   ├── serve_deployment_grafana_dashboard.json  
+    │   └── serve_grafana_dashboard.json           
+    ├── entrypoint.sh                               # Container entry point script
+    ├── images/                                     # Directory for documentation images
+    ├── init/                                       # Initialization scripts
+    │   └── download_dataset.py                     
+    ├── k8s/                                        # Kubernetes configuration files
+    │   ├── grafana-config.yaml                     # Grafana settings
+    │   ├── prometheus-config.yaml                  # Prometheus settings
+    │   ├── ray-cluster.yaml                        # Ray cluster configuration
+    │   └── ray-service.yaml                        # Ray service definitions
+    ├── readme.md                                   # Project documentation
+    ├── requirements.txt                            # Python package dependencies
+    ├── scripts/                                    
+    │   ├── parallel_compute.py                     # Script for parallel computation tasks
+    │   ├── training.py                             # ML model training script
+    │   └── unstable_task.py                        # Script for testing system stability
+    ├── upload-dashboard.sh                         # Script to upload dashboards to Grafana
+```
 ### Future Work
 
-[] Keep trying integrate Custom Metrics into Ray Dashboard.
-[] Enable training results to be sent to an external system for further analysis or storage.
-[] Configure persistent volume storage to prevent data loss in case of server crashes.
+- [ ] Keep trying integrate Custom Metrics into Ray Dashboard.
+- [ ] Enable training results to be sent to an external system for further analysis or storage.
+- [ ] Configure persistent volume storage to prevent data loss in case of server crashes.

@@ -4,13 +4,13 @@
 This project sets up a scalable Ray cluster using KubeRay on Minikube, optimized for distributed machine learning. The cluster includes one head node and three worker nodes, efficiently supporting tasks like YOLOv8 training and hyperparameter tuning. Monitoring is integrated using Prometheus and Grafana, enabling real-time visualization of system and training metrics. Future work focuses on enhancing custom metric integration, persistent storage, and exporting training results for further analysis.
 
 # Outline
-[Setup](#setup)
-[Question 1](#question-1)
-[Question 2](#question-2)
-[Question 3](#question-3)
-[Question 4](#question-4)
-[Project File Structure](#project-file-structure)
-[Future work](#future-work)
+* [Setup](#setup)
+* [Question 1](#question-1)
+* [Question 2](#question-2)
+* [Question 3](#question-3)
+* [Question 4](#question-4)
+* [Project File Structure](#project-file-structure)
+* [Future work](#future-work)
 
 ## Minikube Configuration  
 Allocate the following resources for Minikube:  
